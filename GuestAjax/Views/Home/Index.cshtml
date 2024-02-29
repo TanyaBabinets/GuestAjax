@@ -1,0 +1,301 @@
+﻿
+
+
+@{
+	ViewData["Title"] = "Index";
+	string a = Context.Session.GetString("Login");
+	int b = 0;
+	int.TryParse(Context.Session.GetString("Id"), out b);
+	string getActive()
+	{
+		
+		if ( a== null)
+			return "active";
+		return "";
+	}
+	
+		
+}
+
+
+@section Scripts {
+	<script>
+		$(document).ready(function () {
+
+
+			getAllMes();
+
+
+			$("body").on("click", ".btn-get-mes", function () {
+				let id = $(this).data("messageid");
+				getMes(id);
+			});
+			$("body").on("click", ".btn-clear-inputs", function () {
+
+				$("input[type='text'], input[type='number']").val("");
+			});
+			function getUser(userId, callback) {
+				$.ajax({
+					url: '@Url.Action("GetUserById", "User")',
+					type: "GET",
+					data: { id: userId },
+					success: function (response) {
+						callback(response);
+					},
+					error: function (x, y, z) {
+						alert(x + '\n' + y + '\n' + z);
+					}
+
+				});
+			}
+
+			// создание строки для таблицы
+			let row = function (mes, user) {
+				return "<tr data-rowid='" + mes.Id + "'><td>" + mes.Id + "</td>" +
+					"<td>" + mes.message + "</td> <td>" + mes.mark + "</td>" +
+					"<td>" + mes.date + "</td> <td>" + user.Login + "</td>" +
+					"<td><a href='javascript: void (0)' data-messageid='" + mes.Id + 
+					"' class='btn btn-success btn-get-mes'>Детали</a></td>" +
+					"<td><a href='javascript: void (0)' class='btn btn-success btn-clear-inputs'>Очистить</a></td>" +
+					"</tr>";
+
+			};
+
+			// Получение всех сообщений
+			function getAllMes() {
+				$.ajax({
+
+					url: '@Url.Action("GetAllMes", "Mes")',
+					type: 'GET',
+					contentType: false,
+					processData: false,
+					success: function (response) {
+						let rows = "";
+						let mess = JSON.parse(response);
+						//   console.log(mess);
+						$.each(mess, function (index, mes) {
+							getUser(mes.user.Id, function (user) {
+								rows += row(mes, mes.user);
+								$("#mes-list").html(rows);
+							});
+						});
+					},
+					error: function (x, y, z) {console.log(x)
+
+						//alert(x + '\n' + y + '\n' + z);
+					}
+				});
+			}
+
+
+
+			// GET BY ID
+			function getMes(messageid) {
+
+				let url = '@Url.Action("GetById", "Mes")' + '/' + messageid;
+				$.ajax({
+					type: 'GET',
+					url: url,
+					contentType: false,
+					processData: false,
+					success: function (response) {
+						var mes = JSON.parse(response);
+						$("#message").val(mes.message);
+						$("#mark").val(mes.mark);
+						$("#Datetime").val(mes.Datetime);
+						$("#user").val(mes.user.Login);
+						$("#hdn-mes-id").val(mes.Id);
+
+					},
+					error: function (x, y, z) {
+						alert(x + '\n' + y + '\n' + z);
+					}
+				});
+			}
+
+			//CREATE
+			
+			$("#btn-insert-mes").on("click", function () {
+				let formData = new FormData();
+				//formData.append("id", $("#hdn-mes-id").val());
+				formData.append("message", $("#message").val());
+				formData.append("mark", $("#mark").val());
+				formData.append("Datetime", $("#Datetime").val());
+				formData.append("userId", @b);
+				$.ajax({
+					type: 'POST',
+					url: '@Url.Action("AddMes", "Mes")',
+					contentType: false,
+					processData: false,
+					data: formData,
+					success: function (response) {
+						alert(response);
+						resetForm();
+
+						getAllMes();
+					},
+
+					error: function (x, y, z) {
+						console.log(x)
+					}
+					// 	alert(x + '\n' + y + '\n' + z);
+					//}
+				});
+			});
+			// UPDATE
+			$("#btn-update-mes").on("click", function () {
+				let formData = new FormData();
+				formData.append("id", $("#hdn-mes-id").val());
+				formData.append("message", $("#message").val());
+				formData.append("mark", $("#mark").val());
+				formData.append("Datetime", $("#Datetime").val());
+				formData.append("userId", @b);
+				$.ajax({
+					type: 'PUT',
+					url: '@Url.Action("UpdateMes", "Mes")',
+					contentType: false,
+					processData: false,
+					data: formData,
+					success: function (response) {
+						alert(response);
+						resetForm();
+
+						getAllMes();
+					},
+					error: function (x, y, z) {
+						alert(x + '\n' + y + '\n' + z);
+					}
+				});
+			});
+			//DELETE
+			$("#btn-delete-mes").on("click", function () {
+				if (!confirm("Вы действительно желаете удалить?"))
+					return;
+				let formData = new FormData();
+				formData.append("id", $("#hdn-mes-id").val());
+				$.ajax({
+					type: 'DELETE',
+					url: '@Url.Action("DeleteMes", "Mes")',
+					contentType: false,
+					processData: false,
+					data: formData,
+					success: function (response) {
+						alert(response);
+						resetForm();
+
+						getAllMes();
+					},
+					error: function (x, y, z) {
+						alert(x + '\n' + y + '\n' + z);
+					}
+				});
+			});
+			function resetForm() {
+				$("#hdn-mes-id").val("");
+				$("#message").val("");
+				$("#mark").val("");
+				$("Datetime").val("");
+				$("#user").val("");
+			}
+		});
+	</script>
+}
+<div class="text-center">
+	<h1 class="display-4">Добро пожаловать в Emily Resort</h1>
+	<h2 class="display-4">Гостевая книга</h2>
+	<h3 class="display-4">Поделитесь впечатлениями!</h3>
+	<hr />
+</div>
+<div id="vhod">
+	<div id="buttons">
+		<a asp-controller="User" asp-action="Login">Войти</a>
+	</div>
+	<div id="buttons">
+		<a asp-controller="User" asp-action="Register">Зарегистрироваться</a>
+	</div>
+</div>
+
+
+<div class="row @getActive()">
+	<div class="col-sm-12">
+		<form>
+			<input type="hidden" id="hdn-mes-id" />
+			<div class="row g-3">
+				<div class="col-sm-6">
+					<label for="Login" class="form-label">Логин</label>
+					<input type="text" class="form-control" id="user" placeholder="Введите логин" value="@a" autocomplete="off" required>
+				</div>
+				<div class="col-sm-6">
+					<label for="Datetime" class="form-label">Дата</label>
+					<input type="date" class="form-control" id="Datetime" placeholder="Выберите дату" value="" autocomplete="off" required>
+				</div>
+
+				<div class="col-sm-6">
+					<label for="message" class="form-label">Ваш отзыв</label>
+					<input type="text" class="form-control" id="message" placeholder="Напишите отзыв" value="" autocomplete="off" required>
+				</div>
+				<div class="col-sm-6">
+					<label for="mark" class="form-label">Оцените ваше прибывание по шкале 1-10 баллов</label>
+					<input type="number" class="form-control" id="mark" placeholder="Оценка" value="" autocomplete="off" required>
+				</div>
+			</div>
+			<table class="table">
+				<tbody>
+
+					<div id="vhod">
+						<div id="buttons">
+
+							<a href="javascript:void(0)"  id="btn-insert-mes">Сохранить</a>
+						</div>
+						<div id="buttons">
+							<a href="javascript:void(0)" class="btn" id="btn-update-mes">Обновить</a>
+						</div>
+						<div id="buttons">
+							<a href="javascript:void(0)" class="btn" id="btn-delete-mes">Удалить</a>
+						</div>
+					</div>
+
+				</tbody>
+
+			</table>
+		</form>
+
+	</div>
+	<br />
+</div>
+<div class="row">
+	<div class="col-md-12">
+		<table class="table table-bordered">
+			<thead>
+				<tr>
+					<td>#</td>
+					<td>Отзыв</td>
+					<td>Оценка</td>
+					<td>Дата</td>
+					<td>Посетитель</td>
+					<td>Действие</td>
+					<td>Действие</td>
+				</tr>
+			</thead>
+			<tbody id="mes-list">
+			</tbody>
+		</table>
+	</div>
+</div>
+
+
+<div class="imgs" enctype="multipart/form-data">
+
+
+	<img src="~/img/main.jpg" alt="main">
+	<img src="~/img/pool.jpg" alt="main">
+	<img src="~/img/rest1.jpg" alt="main">
+
+
+</div>
+		</div>
+
+
+@{
+	await Html.RenderPartialAsync("_ValidationScriptsPartial");
+}

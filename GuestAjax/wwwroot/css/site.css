@@ -1,0 +1,81 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@700&family=Rubik+Bubbles&display=swap');
+
+@import url('https://fonts.googleapis.com/css2?family=Archivo+Narrow:ital,wght@0,400;0,500;0,700;1,400;1,700&family=Fredoka:wght@400;500;600&family=Lobster&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Kaushan+Script&display=swap');
+
+* {
+    margin: 0px;
+    padding: 0px;
+}
+
+@media (min-width: 768px) {
+    html {
+        font-size: 16px;
+    }
+}
+
+.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
+    box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+}
+
+body {
+    background-color: beige;
+    font-family: 'Archivo Narrow', sans-serif;
+}
+
+.imgs {
+    display: flex; 
+    justify-content: space-between; 
+    width: 100%; 
+}
+
+    .imgs img {
+        max-width: calc(33.33% - 4px); /* Ширина каждого изображения (33.33% минус отступы между ними) */
+        height: auto;
+        margin-right: 2px; 
+    }
+
+#vhod {
+    display: flex;
+    justify-content: center;
+    margin-bottom:10px;
+}
+#buttons {
+    margin-top: 10px;
+    margin-left: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 200px;
+    height: 40px;
+    color: white;
+    border: 1px solid grey;
+    border-radius: 0.5%;
+    background-color: rosybrown;
+    text-align: center;
+    text-decoration: none;
+    box-shadow: 10px 10px 10px grey;
+}
+.active {
+display:none;
+}
+#buttons a {
+    text-decoration: none; 
+    color:black;
+}
+thead {
+font-size:28px;
+font-weight:bold;
+color:saddlebrown;
+
+}
+.text-center {
+font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+color:saddlebrown;
+font-weight:bold;
+}
+    .text-center h2 {
+   font-size:36px; }
+    .text-center h3 {
+        font-size: 26px;
+    }
